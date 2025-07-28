@@ -1,32 +1,30 @@
-import { createApiResponse, createApiError } from "@/lib/api-response";
+import type { NextConfig } from "next";
+import createNextIntlPlugin from "next-intl/plugin";
+import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
 
-import { createClient } from "@/utils/supabase/server";
-import { memoBaseClient } from "@/utils/memobase/client";
+const withNextIntl = createNextIntlPlugin();
 
-/**
- * 删除 event
- * @param event_id event ID
- */
-export async function DELETE(req: Request, { params }: { params: Promise<{ event_id: string }> }) {
-  // get user from supabase
-  const supabase = await createClient();
-  const { data, error } = await supabase.auth.getUser();
-  if (error || !data?.user) {
-    return createApiError("未授权", 401);
-  }
+const nextConfig: NextConfig = {
+  output: "standalone",
+  basePath: process.env.NEXT_PUBLIC_BASE_PATH || "",
 
-  const { event_id } = await params;
-  if (!event_id) {
-    return createApiError("Bad Request", 400);
-  }
+  env: {
+    MEMOBASE_API_KEY: process.env.MEMOBASE_API_KEY,
+    MEMOBASE_API_URL: process.env.MEMOBASE_API_URL, // ✅ This fixes the .replace crash
+    STATIC_USER_ID: process.env.STATIC_USER_ID,
+    OPENAI_API_KEY: process.env.OPENAI_API_KEY,
+  },
 
-  try {
-    const user = await memoBaseClient.getOrCreateUser(data.user.id);
-    await user.deleteEvent(event_id);
-  } catch (error: unknown) {
-    console.error(error);
-    return createApiError("删除失败", 500);
-  }
+  webpack(config) {
+    config.module.rules.push({
+      test: /\.md$/,
+      resourceQuery: /raw/,
+      type: 'asset/source',
+    });
+    return config;
+  },
+};
 
-  return createApiResponse(null, "删除成功");
-}
+export default withNextIntl(nextConfig);
+
+initOpenNextCloudflareForDev();
