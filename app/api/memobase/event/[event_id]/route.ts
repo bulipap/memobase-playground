@@ -5,9 +5,9 @@ import { memoBaseClient } from "@/utils/memobase/client";
 
 export async function DELETE(
   req: NextRequest,
-  context: { params: { event_id: string } }
+  context: { params: Record<string, string> }
 ) {
-  const { event_id } = context.params;
+  const event_id = context.params.event_id;
 
   const supabase = await createClient();
   const { data, error } = await supabase.auth.getUser();
