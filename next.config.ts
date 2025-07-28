@@ -9,8 +9,8 @@ const nextConfig: NextConfig = {
   basePath: process.env.NEXT_PUBLIC_BASE_PATH || "",
 
   env: {
-    MEMOBASE_API_KEY: process.env.MEMOBASE_API_KEY, // ✅ add this line
-    // (optional: also add others here if needed server-side)
+    MEMOBASE_API_KEY: process.env.MEMOBASE_API_KEY,
+    MEMOBASE_API_URL: process.env.MEMOBASE_API_URL, // ✅ <-- This fixes the .replace error
     STATIC_USER_ID: process.env.STATIC_USER_ID,
     OPENAI_API_KEY: process.env.OPENAI_API_KEY,
   },
