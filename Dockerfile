@@ -1,6 +1,7 @@
 # syntax=docker.io/docker/dockerfile:1
 
-FROM node:18 AS base  # Changed from node:18-alpine to node:18
+# Changed from node:18-alpine to node:18 to fix missing binary errors (e.g. workerd ENOENT)
+FROM node:18 AS base
 
 # Install dependencies only when needed
 FROM base AS deps
@@ -27,7 +28,7 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Uncomment to disable telemetry
+# Uncomment to disable Next.js telemetry
 # ENV NEXT_TELEMETRY_DISABLED=1
 
 RUN \
