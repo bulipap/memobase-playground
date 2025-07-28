@@ -1,5 +1,4 @@
 import { createApiResponse, createApiError } from "@/lib/api-response";
-
 import { createClient } from "@/utils/supabase/server";
 import { memoBaseClient } from "@/utils/memobase/client";
 
@@ -7,7 +6,10 @@ import { memoBaseClient } from "@/utils/memobase/client";
  * 删除 event
  * @param event_id event ID
  */
-export async function DELETE(req: Request, { params }: { params: Promise<{ event_id: string }> }) {
+export async function DELETE(
+  req: Request,
+  context: { params: { event_id: string } }
+) {
   // get user from supabase
   const supabase = await createClient();
   const { data, error } = await supabase.auth.getUser();
@@ -15,7 +17,7 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ event
     return createApiError("未授权", 401);
   }
 
-  const { event_id } = await params;
+  const { event_id } = context.params;
   if (!event_id) {
     return createApiError("Bad Request", 400);
   }
